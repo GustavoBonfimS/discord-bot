@@ -1,37 +1,41 @@
-require("dotenv").config();
+require('dotenv').config();
+const Discord = require('discord.js');
 
-const Discord = require("discord.js");
 const client = new Discord.Client({
-  partials: ["MESSAGE"],
+  presence: {
+    activity: {
+      name: '$help',
+      type: 'PLAYING',
+    },
+  },
+});
+const BOT_PREFIX = '$';
+
+client.on('ready', () => {
+  console.log('Bot online ✨');
 });
 
-const BOT_PREFIX = "!";
-const ROLE_COMMAND = "role";
-
-client.on("ready", () => {
-  console.log("Bot online ✨");
+client.on('guildMemberAdd', member => {
+  const channel = member.guild.channels.cache.find(ch => ch.name === 'geral');
+  // Do nothing if the channel wasn't found on this server
+  if (!channel) return;
+  // Send the message, mentioning the member
+  channel.send(`Bem vindo a nossa bagunça, ${member} !`);
 });
 
-client.on("messageDelete", (msg) => {
-  msg.channel.send("Stop deleting messages");
-});
-
-client.on("message", (msg) => {
-  if (msg.content == "Oi Bot") {
-    msg.react("❤");
+client.on('message', (msg) => {
+  if (msg.content === 'oi bot') {
+    msg.react('❤');
+    msg.channel.send('Olá!');
   }
 
-  if (msg.content === `${BOT_PREFIX}${ROLE_COMMAND}`) {
-    // msg.channel.send("Hello"); // reply on channel
+  if (msg.content === `${BOT_PREFIX}github`) {
+    msg.channel.send('link: https://github.com/GustavoBonfimS/discord-bot');
+  }
 
-    // msg.reply("!pong"); // reply to user
-
-    roleUser(msg.member);
+  if (msg.content === `${BOT_PREFIX}help`) {
+    msg.channel.send('$github -> link do repositório \nContruibua!');
   }
 });
-
-function roleUser(member) {
-  member.roles.add("770715226457768016"); // add role in a user
-}
 
 client.login(process.env.BOT_TOKEN);
